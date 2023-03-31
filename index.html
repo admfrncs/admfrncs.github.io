@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Calorie Tracker</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<h1>Calorie Tracker</h1>
+<form>
+<label for="calorie-intake">Calorie Intake:</label>
+<input type="number" id="calorie-intake" name="calorie-intake"><br><br>
+
+<label for="calorie-burned">Calories Burned:</label>
+<input type="number" id="calorie-burned" name="calorie-burned"><br><br>
+
+<label for="weight">Weight (in pounds):</label>
+<input type="number" id="weight" name="weight"><br><br>
+
+<button type="button" onclick="saveData()">Save Data</button>
+</form>
+
+<div id="results">
+<h2>
+Data</h2>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Calorie Intake</th>
+<th>Calories Burned</th>
+<th>Weight (lbs)</th>
+</tr>
+<tbody id="table-body">
+</tbody>
+</table>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+```
+
+
+
+table {
+border-collapse: collapse;
+width: 100%;
+}
+
+th, td {
+text-align: left;
+padding: 8px;
+}
+
+th {
+background-color: #4CAF50;
+color: white;
+}
+
+tr:nth-child(even) {
+background-color: #f2f2f2;
+}
+
+
+
+
+// Define an array to store the data
+let data = [];
+
+// Get references to the input elements and the table body
+const calorieIntakeInput = document.getElementById('calorie-intake');
+const caloriesBurnedInput = document.getElementById('calorie-burned');
+const weightInput = document.getElementById('weight');
+const tableBody = document.getElementById('table-body');
+
+// Save data when the button is clicked
+function saveData() {
+  // Get the current date
+  const date = new Date().toLocaleDateString();
+
+  // Get the values from the input fields
+  const calorieIntake = parseInt(calorieIntakeInput.value);
+  const caloriesBurned = parseInt(caloriesBurnedInput.value);
+  const weight = parseFloat(weightInput.value);
+
+  // Add the data to the array
+  data.push({ date, calorieIntake, caloriesBurned, weight });
+
+  // Clear the input fields
+  calorieIntakeInput.value = '';
+  caloriesBurnedInput.value = '';
+  weightInput.value = '';
+
+  // Update the table
+  updateTable();
+}
+
+// Calculate the total calorie intake and calories burned for a given date
+function calculateTotals(date) {
+  let totalCalorieIntake = 0;
+  let totalCaloriesBurned = 0;
+
+  data.forEach((item) => {
+    if (item.date === date) {
+      totalCalorieIntake += item.calorieIntake;
+      totalCaloriesBurned += item.caloriesBurned;
+    }
+  });
+
+  return { totalCalorieIntake, totalCaloriesBurned };
+}
+
+// Calculate the weight difference from the first entry
+function calculateWeightDifference() {
+  if (data.length === 0) {
+    return '';
+  }
+
+  const initialWeight = data[0].weight;
+  const currentWeight = data[data.length - 1].weight;
+  const difference = currentWeight - initialWeight;
+
+  if (difference > 0) {
+    return `${difference.toFixed(1)} lbs`;
+  } else {
+    return `${difference.toFixed(1)} lbs`;
+  }
+}
+
+// Update the table with the data
+function updateTable() {
+// Clear the table
+tableBody.innerHTML = '';
+
+// Display data for the last 7 days
+const today = new Date();
+for (let i = 6; i >= 0; i--) {
+const date = new Date(today);
+date.setDate(date.getDate() - i);
+
+const { totalCalorieIntake, totalCaloriesBurned } = calculateTotals(date.toLocaleDateString());
+
+const row = document.createElement('tr');
+row.innerHTML = `
+  <td>${date.toLocaleDateString()}</td>
+  <td>${totalCalorieIntake}</td>
+  <td>${totalCaloriesBurned}</td>
+  <td>${data.length > 0 && date.toLocaleDateString() === data[data.length - 1].date ? `${data[data.length - 1].weight} (${calculateWeightDifference()})` : ''}</td>
+`;
+
+tableBody.appendChild(row);
+}
+}
+
+// Load saved data from local storage
+function loadData() {
+const savedData = localStorage.getItem('data');
+if (savedData) {
+data = JSON.parse(savedData);
+updateTable();
+}
+}
+
+// Save data to local storage when the page is closed
+window.addEventListener('beforeunload', () => {
+localStorage.setItem('data', JSON.stringify(data));
+});
+
+// Load saved data and update the table
+loadData();
