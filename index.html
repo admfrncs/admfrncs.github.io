@@ -2,6 +2,26 @@
 <html>
 <head>
 <title>Calorie Tracker</title>
+<style>
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+</style>
 <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
@@ -35,36 +55,8 @@ Data</h2>
 </table>
 </div>
 
-<script src="script.js"></script>
-</body>
-</html>
-```
-
-
-
-table {
-border-collapse: collapse;
-width: 100%;
-}
-
-th, td {
-text-align: left;
-padding: 8px;
-}
-
-th {
-background-color: #4CAF50;
-color: white;
-}
-
-tr:nth-child(even) {
-background-color: #f2f2f2;
-}
-
-
-
-
-// Define an array to store the data
+<script>
+  // Define an array to store the data
 let data = [];
 
 // Get references to the input elements and the table body
@@ -168,3 +160,6 @@ localStorage.setItem('data', JSON.stringify(data));
 
 // Load saved data and update the table
 loadData();
+</script>
+</body>
+</html>
